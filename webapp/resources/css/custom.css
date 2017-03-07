@@ -1,0 +1,34 @@
+/*html, body {*/
+/*margin: 0;*/
+/*width: 100%;*/
+/*height: 100%;*/
+/*background: #151515 no-repeat center;*/
+/*}*/
+
+body {
+    text-align: center;
+    color: #fff;
+    font-family: 'Cabin', sans-serif;
+    padding-left: 10%;
+    padding-right: 10%;
+    background: #666666 no-repeat center;
+}
+
+thead, th, tr {
+    text-align: center;
+}
+
+#title {
+    padding-top: 5%;
+    padding-bottom: 2%;
+}
+
+.form-group.required .control-label:after {
+    content:"*";
+    color:red;
+    margin-left: 4px;
+}
+
+.modal-body, .modal-header, .modal-footer {
+    background-color: #666666;
+}

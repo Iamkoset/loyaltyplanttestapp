@@ -1,0 +1,170 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="userslist" content="width=device-width, initial-scale=1">
+
+    <title>Users</title>
+
+    <!--<script src="resources/js/jquery.growl.js" type="text/javascript"></script>-->
+    <script src="resources/js/jquery-3.1.1.min.js" type="text/javascript"></script>
+    <script src="resources/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="resources/js/footable.min.js" type="text/javascript"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
+
+    <!--<link href="resources/css/jquery.growl.css" rel="stylesheet">-->
+    <link href="resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="resources/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="resources/css/footable.bootstrap.min.css" rel="stylesheet">
+    <link href="resources/css/custom.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="starter-template">
+    <h1 id="title">LoyaltyPlant Test Application</h1>
+</div>
+<div>
+    <div class="container-fluid">
+        <div class="row">
+            <div>
+                <table id="usersTable" class="table" data-paging="true" data-editing="true" data-state="true">
+                    <thead>
+                    <tr>
+                        <th data-name="id" data-type="number" class="col-md-1">ID</th>
+                        <th data-name="userName" class="col-md-6">Info</th>
+                        <th data-name="email" class="col-md-3">Email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-expanded="true">
+                        <td>1</td>
+                        <td>Ivanov Konstantin</td>
+                        <td>i.am.koset@yandex.ru</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Shaginyan Norair</td>
+                        <td>inorair@gmail.com</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Smirnov Roman</td>
+                        <td>ya.tolstyi@rambler.ru</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editor-modal" tabindex="-1" role="dialog" aria-labelledby="editor-title">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content form-horizontal" id="editor">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="editor-title" />
+                </div>
+                <div class="modal-body">
+                    <input type="number" id="id" name="id" class="hidden"/>
+                    <div class="form-group required">
+                        <label for="firstName" class="col-sm-3 control-label">First Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                   placeholder="First Name"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label for="lastName" class="col-sm-3 control-label">Last Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                   placeholder="Last Name"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-sm-3 control-label">Email</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="email" name="email"
+                                   placeholder="Email">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var modal = $('#editor-modal'),
+            editor = $('#editor'),
+            editorTitle = $('#editor-title'),
+            // the below initializes FooTable and returns the created instance for later use
+            ft = FooTable.init('#usersTable', {
+                editing: {
+                    enabled: true,
+                    addRow: function () {
+                        modal.removeData('row'); // remove any previous row data
+                        editor[0].reset(); // reset the form to clear any previous row data
+                        editorTitle.text('Add user'); // set the modal title
+                        modal.modal('show'); // display the modal
+                    },
+                    editRow: function (row) {
+                        var values = row.val();
+                        // we need to find and set the initial value for the editor inputs
+                        editor.find('#id').val(values.id);
+                        editor.find('#firstName').val(values.userName.split(" ")[1]);
+                        editor.find('#lastName').val(values.userName.split(" ")[0]);
+                        editor.find('#email').val(values.email);
+
+                        modal.data('row', row); // set the row data value for use later
+                        editorTitle.text('Edit user'); // set the modal title
+                        modal.modal('show'); // display the modal
+                    },
+                    deleteRow: function (row) {
+                        // This example displays a confirm popup and then simply removes the row but you could just
+                        // as easily make an ajax call and then only remove the row once you retrieve a response.
+                        if (confirm('Are you sure you want to delete the row?')) {
+                            row.delete();
+                        }
+                    }
+                }
+            }),
+            // this example does not send data to the server so this variable holds the integer to use as an id for newly
+            // generated rows. In production this value would be returned from the server upon a successful ajax call.
+            uid = 10;
+
+        editor.on('submit', function (e) {
+            if (this.checkValidity && !this.checkValidity()) return; // if validation fails exit early and do nothing.
+            e.preventDefault(); // stop the default post back from a form submit
+            var row = modal.data('row'), // get any previously stored row object
+                values = { // create a hash of the editor row values
+                    id: editor.find('#id').val(),
+                    userName: editor.find('#firstName').val() + " " + editor.find('#lastName').val(),
+                    email: editor.find('#email').val()
+                };
+
+            if (row instanceof FooTable.Row) { // if we have a row object then this is an edit operation
+                // here you can execute an ajax call to the server and then only update the row once the result is
+                // retrieved. This example simply updates the row straight away.
+                row.val(values);
+            } else { // otherwise this is an add operation
+                // here you can execute an ajax call to the server to save the values and get the new row id and then
+                // only add the row once the result is retrieved. This example simply adds the row straight away using
+                // a basic integer id.
+                values.id = uid++;
+                ft.rows.add(values);
+            }
+            modal.modal('hide');
+        });
+    });
+
+</script>
+
+</body>
+</html>
