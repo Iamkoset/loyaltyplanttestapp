@@ -1,8 +1,8 @@
 package com.loyaltyplant.testapp.domain.model;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.persistence.*;
+
+;
 
 @Entity
 public class Account {
@@ -12,8 +12,7 @@ public class Account {
     private long accountNumber;
     @ManyToOne
     private User user;
-    @NotNull
-    @Column(columnDefinition = "bigint default 0")
+    @Column(columnDefinition = "bigint default 0", nullable = false)
     private long currency;
 
     public Account() {
@@ -38,12 +37,12 @@ public class Account {
         this.user = user;
     }
 
-    public void setAccountNumber(long accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
     public long getAccountNumber() {
         return accountNumber;
+    }
+
+    public void setAccountNumber(long accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public long getCurrency() {

@@ -1,7 +1,5 @@
 package com.loyaltyplant.testapp.domain.model;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.persistence.*;
 import java.util.Set;
 
@@ -11,9 +9,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull
+    @Column(nullable = false)
     private String firstName;
-    @NotNull
+    @Column(nullable = false)
     private String lastName;
     private String email;
     @OneToMany(mappedBy = "user")

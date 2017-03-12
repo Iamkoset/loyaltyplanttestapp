@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
-@SuppressWarnings("all")
 @RestController
 @RequestMapping("/transfer")
 public class TransferController {
@@ -22,35 +21,35 @@ public class TransferController {
     private TransferService transferService;
 
     @PutMapping
-    public ResponseEntity transferFunds(@RequestBody AccountTransferDto dto) {
+    public ResponseEntity<? super AccountTransferDto> transferFunds(@RequestBody AccountTransferDto dto) {
         AccountTransferDto result;
         try {
             result = transferService.transfer(dto.getFromAccount(),
                     dto.getToAccount(), dto.getAmount());
 
         } catch (NotEnoughFundsException nef) {
-            return new ResponseEntity(nef.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(nef.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (AccountDoesntExistException ade) {
-            return new ResponseEntity(ade.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ade.getMessage(), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/withdraw")
-    public ResponseEntity withdrawFunds(@RequestBody AccountTransferDto dto) {
+    public ResponseEntity<? super AccountTransferDto> withdrawFunds(@RequestBody AccountTransferDto dto) {
         AccountTransferDto result;
         try {
             result = transferService.withdraw(dto.getFromAccount(), dto.getAmount());
         } catch (NotEnoughFundsException nef) {
-            return new ResponseEntity(nef.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(nef.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/add")
-    public ResponseEntity addFunds(@RequestBody AccountTransferDto dto) {
+    public ResponseEntity<AccountTransferDto> addFunds(@RequestBody AccountTransferDto dto) {
         AccountTransferDto result = transferService.add(dto.getToAccount(), dto.getAmount());
-        return new ResponseEntity(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
