@@ -1,5 +1,8 @@
 package com.loyaltyplant.testapp.service.sync;
 
-public class Locker {
-    //Object to lock on during thread synchronization
-}
+/**
+ * Object to lock on during thread synchronization on
+ * {@link com.loyaltyplant.testapp.service.TransferService} operations
+ *
+ * */
+public class Locker { }

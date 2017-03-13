@@ -19,5 +19,4 @@ public class LockerService {
         locker = registry.putIfAbsent(numberToLock, new Locker());
         return locker;
     }
-
 }

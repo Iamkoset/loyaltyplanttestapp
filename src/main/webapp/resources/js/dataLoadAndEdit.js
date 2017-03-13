@@ -80,6 +80,10 @@ $(function () {
             data: JSON.stringify({
                 id: $('#divUserId').text()
             }),
+            complete: function (response) {
+                if (response.status == 501)
+                    $.growl.notice({message: response.responseText});
+            },
             success: function (response) {
                 var ohMyGodWhatAString =
                     '<li class="list-group-item"><h4>Account number: <div class="liAccountNumber">' +
@@ -304,6 +308,10 @@ $(function () {
                     email: emailFromModal,
                     accountSet: null
                 }),
+                complete: function (response) {
+                    if (response.status == 501)
+                        $.growl.notice({message: response.responseText});
+                },
                 success: function (response) {
                     var adds = {
                         id: response.id,

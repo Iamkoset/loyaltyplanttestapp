@@ -1,8 +1,7 @@
 package com.loyaltyplant.testapp.domain.model;
 
 import javax.persistence.*;
-
-;
+import java.util.Objects;
 
 @Entity
 @Table(name = "account")
@@ -52,6 +51,21 @@ public class Account {
 
     public void setCurrency(long currency) {
         this.currency = currency;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Account)) return false;
+        Account account = (Account) o;
+        return accountNumber == account.accountNumber &&
+                currency == account.currency &&
+                Objects.equals(user, account.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountNumber, user, currency);
     }
 
     @Override

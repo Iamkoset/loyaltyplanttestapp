@@ -22,6 +22,9 @@ public class AccountService {
     @Transactional
     public Account addAccount(Long userId) {
         User user = userDao.findOne(userId);
+        if (user == null)
+            return null;
+
         Account account = new Account();
         account.setUser(user);
         return accountDao.saveAndFlush(account);

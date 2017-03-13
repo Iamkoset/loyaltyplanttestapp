@@ -2,12 +2,12 @@ package com.loyaltyplant.testapp.exceptions;
 
 /**
  * Exception thrown if {@link com.loyaltyplant.testapp.domain.model.Account}
- * doesn't have valid currency for operations
+ * is not found in data store
  *
  * */
-public class NotEnoughFundsException extends Exception {
+public class NonexistentAccountException extends Exception {
 
-    public NotEnoughFundsException(String message) {
+    public NonexistentAccountException(String message) {
         super(message);
     }
 }

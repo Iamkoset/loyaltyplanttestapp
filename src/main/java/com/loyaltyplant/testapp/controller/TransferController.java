@@ -1,7 +1,7 @@
 package com.loyaltyplant.testapp.controller;
 
 import com.loyaltyplant.testapp.controller.dto.AccountTransferDto;
-import com.loyaltyplant.testapp.exceptions.AccountDoesntExistException;
+import com.loyaltyplant.testapp.exceptions.NonexistentAccountException;
 import com.loyaltyplant.testapp.exceptions.NotEnoughFundsException;
 import com.loyaltyplant.testapp.service.TransferService;
 import org.springframework.http.HttpStatus;
@@ -20,6 +20,18 @@ public class TransferController {
     @Resource(name = "transferService")
     private TransferService transferService;
 
+    /**
+     * Returns {@link ResponseEntity} which contain data of transfer operation
+     *
+     * Response status {@link HttpStatus#BAD_REQUEST} means that sender account
+     * doesn't have enough funds
+     *
+     * Response status {@link HttpStatus#NOT_FOUND} means that at least one of
+     * accounts wasn't found in data store
+     *
+     * @param dto {@link AccountTransferDto}
+     * @return {@link ResponseEntity}
+     * */
     @PutMapping
     public ResponseEntity<? super AccountTransferDto> transferFunds(@RequestBody AccountTransferDto dto) {
         AccountTransferDto result;
@@ -29,12 +41,21 @@ public class TransferController {
 
         } catch (NotEnoughFundsException nef) {
             return new ResponseEntity<>(nef.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (AccountDoesntExistException ade) {
-            return new ResponseEntity<>(ade.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (NonexistentAccountException nae) {
+            return new ResponseEntity<>(nae.getMessage(), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    /**
+     * Returns {@link ResponseEntity} which contain data of withdraw operation
+     *
+     * Response status {@link HttpStatus#BAD_REQUEST} means that sender account
+     * doesn't have enough funds
+     *
+     * @param dto {@link AccountTransferDto}
+     * @return {@link ResponseEntity}
+     * */
     @PutMapping("/withdraw")
     public ResponseEntity<? super AccountTransferDto> withdrawFunds(@RequestBody AccountTransferDto dto) {
         AccountTransferDto result;
@@ -47,6 +68,12 @@ public class TransferController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    /**
+     * Returns {@link ResponseEntity} which contain data of add operation
+     *
+     * @param dto {@link AccountTransferDto}
+     * @return {@link ResponseEntity}
+     * */
     @PutMapping("/add")
     public ResponseEntity<AccountTransferDto> addFunds(@RequestBody AccountTransferDto dto) {
         AccountTransferDto result = transferService.add(dto.getToAccount(), dto.getAmount());

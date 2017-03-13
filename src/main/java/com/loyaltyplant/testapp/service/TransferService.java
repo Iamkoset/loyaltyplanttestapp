@@ -3,7 +3,7 @@ package com.loyaltyplant.testapp.service;
 import com.loyaltyplant.testapp.controller.dto.AccountTransferDto;
 import com.loyaltyplant.testapp.domain.dao.AccountDao;
 import com.loyaltyplant.testapp.domain.model.Account;
-import com.loyaltyplant.testapp.exceptions.AccountDoesntExistException;
+import com.loyaltyplant.testapp.exceptions.NonexistentAccountException;
 import com.loyaltyplant.testapp.exceptions.NotEnoughFundsException;
 import com.loyaltyplant.testapp.service.sync.Locker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +21,12 @@ public class TransferService {
 
     @Transactional
     public AccountTransferDto transfer(long fromAccount, long toAccount, long amount)
-            throws NotEnoughFundsException, AccountDoesntExistException {
+            throws NotEnoughFundsException, NonexistentAccountException {
 
         Account from = accountDao.getOne(fromAccount);
+        if (from == null)
+            throw new NonexistentAccountException("Account " + toAccount + " doesn't exist");
+
         long currency = from.getCurrency();
         if (currency < amount) {
             throw new NotEnoughFundsException("Account " + fromAccount +
@@ -32,7 +35,7 @@ public class TransferService {
         Account to = accountDao.findOne(toAccount);
 
         if (to == null)
-            throw new AccountDoesntExistException("Account " + toAccount + " doesn't exist");
+            throw new NonexistentAccountException("Account " + toAccount + " doesn't exist");
 
         AccountTransferDto result = new AccountTransferDto();
         Long lowestAccountNumber = (from.getAccountNumber() < to.getAccountNumber()) ?

@@ -1,5 +1,18 @@
 package com.loyaltyplant.testapp.controller.dto;
 
+/**
+ * Data transfer object for account currency modification
+ *
+ * {@link com.loyaltyplant.testapp.service.TransferService#transfer(long, long, long)}
+ * {@link com.loyaltyplant.testapp.service.TransferService#withdraw(long, long)}
+ * {@link com.loyaltyplant.testapp.service.TransferService#add(long, long)}
+ *
+ * {@link #fromAccount} id of sender account
+ * {@link #toAccount} id of recipient account
+ * {@link #amount} amount for operation
+ * {@link #senderResultCurrency} currency of sender account after operation
+ * {@link #recipientResultCurrency} currency of recipient account after operation
+ * */
 public class AccountTransferDto {
 
     private long fromAccount;
