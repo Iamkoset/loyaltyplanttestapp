@@ -11,12 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LockerService {
     private ConcurrentHashMap<Long, Locker> registry = new ConcurrentHashMap<>(0);
 
-    public Locker getLockFor(long numberToLock) {
+    public Locker getLockerFor(long numberToLock) {
         Locker locker = registry.get(numberToLock);
-        if (locker == null)
-            registry.put(numberToLock, new Locker());
-
-        locker = registry.putIfAbsent(numberToLock, new Locker());
+        if (locker == null) {
+            locker = new Locker();
+            Locker anotherLocker = registry.putIfAbsent(numberToLock, new Locker());
+            return (anotherLocker == null) ? locker : anotherLocker;
+        }
         return locker;
     }
 }

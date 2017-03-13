@@ -30,9 +30,9 @@ public class TransferService {
                 fromAccount : toAccount;
 
         AccountTransferDto result = new AccountTransferDto();
-        Locker lowestLocker = lockerService.getLockFor(lowestAccountNumber);
+        Locker lowestLocker = lockerService.getLockerFor(lowestAccountNumber);
         synchronized (lowestLocker) {
-            Locker highestLocker = lockerService.getLockFor(highestAccountNumber);
+            Locker highestLocker = lockerService.getLockerFor(highestAccountNumber);
             synchronized (highestLocker) {
                 Account from = accountDao.findOne(fromAccount);
                 if (from == null)
@@ -68,7 +68,7 @@ public class TransferService {
     public AccountTransferDto withdraw(long accountNumber, long amount) throws NotEnoughFundsException {
 
         AccountTransferDto result = new AccountTransferDto();
-        Locker locker = lockerService.getLockFor(accountNumber);
+        Locker locker = lockerService.getLockerFor(accountNumber);
 
         synchronized (locker) {
             Account account = accountDao.getOne(accountNumber);
@@ -89,7 +89,7 @@ public class TransferService {
     public AccountTransferDto add(long accountNumber, long amount) {
 
         AccountTransferDto result = new AccountTransferDto();
-        Locker locker = lockerService.getLockFor(accountNumber);
+        Locker locker = lockerService.getLockerFor(accountNumber);
         synchronized (locker) {
 
             Account account = accountDao.getOne(accountNumber);
