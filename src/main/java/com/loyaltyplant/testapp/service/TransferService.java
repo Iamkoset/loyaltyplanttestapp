@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("transferService")
+@Transactional
 public class TransferService {
 
     @Autowired
@@ -19,7 +20,6 @@ public class TransferService {
     @Autowired
     private LockerService lockerService;
 
-    @Transactional
     public AccountTransferDto transfer(long fromAccount, long toAccount, long amount)
             throws NotEnoughFundsException, NonexistentAccountException {
 
@@ -64,7 +64,6 @@ public class TransferService {
         return result;
     }
 
-    @Transactional
     public AccountTransferDto withdraw(long accountNumber, long amount) throws NotEnoughFundsException {
 
         AccountTransferDto result = new AccountTransferDto();
@@ -85,7 +84,6 @@ public class TransferService {
         return result;
     }
 
-    @Transactional
     public AccountTransferDto add(long accountNumber, long amount) {
 
         AccountTransferDto result = new AccountTransferDto();

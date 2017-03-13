@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service("accountService")
+@Transactional
 public class AccountService {
 
     @Autowired
@@ -19,7 +20,6 @@ public class AccountService {
     @Autowired
     private UserDao userDao;
 
-    @Transactional
     public Account addAccount(Long userId) {
         User user = userDao.findOne(userId);
         if (user == null)
@@ -46,7 +46,6 @@ public class AccountService {
         return accountDao.saveAndFlush(account);
     }
 
-    @Transactional
     public void deleteAccount(Long id) {
         accountDao.delete(id);
     }

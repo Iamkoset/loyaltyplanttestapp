@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service("userService")
+@Transactional
 public class UserService {
 
     @Autowired
@@ -35,7 +36,6 @@ public class UserService {
         return userDao.saveAndFlush(user);
     }
 
-    @Transactional
     public void deleteUser(Long id) {
         List<Account> accountsOfUser = accountDao.getAccountsOfUser(id);
         for (Account account : accountsOfUser) {
