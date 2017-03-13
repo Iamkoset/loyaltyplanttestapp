@@ -23,31 +23,31 @@ public class TransferService {
     public AccountTransferDto transfer(long fromAccount, long toAccount, long amount)
             throws NotEnoughFundsException, NonexistentAccountException {
 
-        Account from = accountDao.getOne(fromAccount);
-        if (from == null)
-            throw new NonexistentAccountException("Account " + toAccount + " doesn't exist");
+        Long lowestAccountNumber = (fromAccount < toAccount) ?
+                fromAccount : toAccount;
 
-        long currency = from.getCurrency();
-        if (currency < amount) {
-            throw new NotEnoughFundsException("Account " + fromAccount +
-                    " doesn\'t have enough funds to transfer");
-        }
-        Account to = accountDao.findOne(toAccount);
-
-        if (to == null)
-            throw new NonexistentAccountException("Account " + toAccount + " doesn't exist");
+        Long highestAccountNumber = (fromAccount > toAccount) ?
+                fromAccount : toAccount;
 
         AccountTransferDto result = new AccountTransferDto();
-        Long lowestAccountNumber = (from.getAccountNumber() < to.getAccountNumber()) ?
-                from.getAccountNumber() : to.getAccountNumber();
-
         Locker lowestLocker = lockerService.getLockFor(lowestAccountNumber);
         synchronized (lowestLocker) {
-            Long highestAccountNumber = (from.getAccountNumber() > to.getAccountNumber()) ?
-                    from.getAccountNumber() : to.getAccountNumber();
-
             Locker highestLocker = lockerService.getLockFor(highestAccountNumber);
             synchronized (highestLocker) {
+                Account from = accountDao.findOne(fromAccount);
+                if (from == null)
+                    throw new NonexistentAccountException("Account " + toAccount + " doesn't exist");
+
+                long currency = from.getCurrency();
+                if (currency < amount) {
+                    throw new NotEnoughFundsException("Account " + fromAccount +
+                            " doesn\'t have enough funds to transfer");
+                }
+                Account to = accountDao.findOne(toAccount);
+
+                if (to == null)
+                    throw new NonexistentAccountException("Account " + toAccount + " doesn't exist");
+
                 from.withdrawFunds(amount);
                 to.addFunds(amount);
                 Account savedFrom = accountDao.saveAndFlush(from);
@@ -67,17 +67,16 @@ public class TransferService {
     @Transactional
     public AccountTransferDto withdraw(long accountNumber, long amount) throws NotEnoughFundsException {
 
-        Account account = accountDao.getOne(accountNumber);
-        long currency = account.getCurrency();
-        if (currency < amount) {
-            throw new NotEnoughFundsException("Account " + accountNumber +
-                    " doesn\'t have enough funds to withdraw");
-        }
-
         AccountTransferDto result = new AccountTransferDto();
         Locker locker = lockerService.getLockFor(accountNumber);
 
         synchronized (locker) {
+            Account account = accountDao.getOne(accountNumber);
+            long currency = account.getCurrency();
+            if (currency < amount) {
+                throw new NotEnoughFundsException("Account " + accountNumber +
+                        " doesn\'t have enough funds to withdraw");
+            }
             account.withdrawFunds(amount);
             account = accountDao.saveAndFlush(account);
             result.setFromAccount(accountNumber);
@@ -89,10 +88,11 @@ public class TransferService {
     @Transactional
     public AccountTransferDto add(long accountNumber, long amount) {
 
-        Account account = accountDao.getOne(accountNumber);
         AccountTransferDto result = new AccountTransferDto();
         Locker locker = lockerService.getLockFor(accountNumber);
         synchronized (locker) {
+
+            Account account = accountDao.getOne(accountNumber);
             account.addFunds(amount);
             account = accountDao.saveAndFlush(account);
             result.setFromAccount(accountNumber);
