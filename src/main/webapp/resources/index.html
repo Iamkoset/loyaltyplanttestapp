@@ -10,7 +10,7 @@
     <script src="resources/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="resources/js/footable.js" type="text/javascript"></script>
     <script src="resources/js/jquery.growl.js" type="text/javascript"></script>
-    <script src="resources/js/usersTableDataLoadAndEdit.js" type="text/javascript"></script>
+    <script src="resources/js/dataLoadAndEdit.js" type="text/javascript"></script>
 
     <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
 
@@ -95,12 +95,11 @@
                 </div>
                 <div class="modal-body">
                     <input type="number" id="accountNumber" name="accountNumber" class="hidden"/>
-                    <input type="number" id="oldCapacity" name="oldCapacity" class="hidden"/>
-                    <div class="form-group required">
+                    <div class="form-group">
                         <label for="amount" class="col-sm-4 control-label">Enter amount</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" id="amount" name="amount"
-                                   placeholder="Amount" pattern="[0-9]*"
+                                   placeholder="Amount" pattern="[0-9]*" maxlength="10"
                                    required>
                         </div>
                     </div>
@@ -108,7 +107,7 @@
                         <label for="accountToTransfer" class="col-sm-4 control-label">Account to transfer</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" id="accountToTransfer" name="accountToTransfer"
-                                   placeholder="Enter account number" pattern="[0-9]*"
+                                   placeholder="Enter account number" pattern="[0-9]*" maxlength="10"
                                    required>
                         </div>
                     </div>
