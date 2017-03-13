@@ -5,6 +5,7 @@ import com.loyaltyplant.testapp.domain.dao.AccountDao;
 import com.loyaltyplant.testapp.domain.model.Account;
 import com.loyaltyplant.testapp.exceptions.AccountDoesntExistException;
 import com.loyaltyplant.testapp.exceptions.NotEnoughFundsException;
+import com.loyaltyplant.testapp.service.sync.Locker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,24 +35,15 @@ public class TransferService {
             throw new AccountDoesntExistException("Account " + toAccount + " doesn't exist");
 
         AccountTransferDto result = new AccountTransferDto();
-        Long lowestNumber = (from.getAccountNumber() < to.getAccountNumber()) ?
+        Long lowestAccountNumber = (from.getAccountNumber() < to.getAccountNumber()) ?
                 from.getAccountNumber() : to.getAccountNumber();
 
-        Object lowestLocker = lockerService.getRegistry().get(lowestNumber);
-        if (lowestLocker == null)
-            lockerService.getRegistry().put(lowestNumber, new Object());
-
-        lowestLocker = lockerService.getRegistry().putIfAbsent(lowestNumber, new Object());
+        Locker lowestLocker = lockerService.getLockFor(lowestAccountNumber);
         synchronized (lowestLocker) {
-            Long highestNumber = (from.getAccountNumber() > to.getAccountNumber()) ?
+            Long highestAccountNumber = (from.getAccountNumber() > to.getAccountNumber()) ?
                     from.getAccountNumber() : to.getAccountNumber();
 
-            Object highestLocker = lockerService.getRegistry().get(highestNumber);
-            if (highestLocker == null)
-                lockerService.getRegistry().put(highestNumber, new Object());
-
-            highestLocker = lockerService.getRegistry().putIfAbsent(highestNumber, new Object());
-
+            Locker highestLocker = lockerService.getLockFor(highestAccountNumber);
             synchronized (highestLocker) {
                 from.withdrawFunds(amount);
                 to.addFunds(amount);
@@ -80,11 +72,7 @@ public class TransferService {
         }
 
         AccountTransferDto result = new AccountTransferDto();
-        Object locker = lockerService.getRegistry().get(accountNumber);
-        if (locker == null)
-            lockerService.getRegistry().put(accountNumber, new Object());
-
-        locker = lockerService.getRegistry().putIfAbsent(accountNumber, new Object());
+        Locker locker = lockerService.getLockFor(accountNumber);
 
         synchronized (locker) {
             account.withdrawFunds(amount);
@@ -100,11 +88,7 @@ public class TransferService {
 
         Account account = accountDao.getOne(accountNumber);
         AccountTransferDto result = new AccountTransferDto();
-        Object locker = lockerService.getRegistry().get(accountNumber);
-        if (locker == null)
-            lockerService.getRegistry().put(accountNumber, new Object());
-
-        locker = lockerService.getRegistry().putIfAbsent(accountNumber, new Object());
+        Locker locker = lockerService.getLockFor(accountNumber);
         synchronized (locker) {
             account.addFunds(amount);
             account = accountDao.saveAndFlush(account);
